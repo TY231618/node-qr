@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3002;
 const fs = require('fs');
+const printerTest = require('printer');
+
 
 const QRCode = require('qrcode')
 
@@ -24,6 +26,12 @@ async function qRGeneratorToFile() {
   fs.writeFileSync('./qr.html', template(brand, res));
   console.log('Wrote to ./qr.html');
 }
+
+const test = QRCode.toString(catURL, {type:'terminal'}, function (err, url) {
+  console.log(url)
+})
+
+console.log(test);
 
 qRGeneratorToFile().catch(error => console.error(error.stack));
 

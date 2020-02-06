@@ -1,38 +1,29 @@
 const ThermalPrinter = require("node-thermal-printer").printer;
 const PrinterTypes = require("node-thermal-printer").types;
-
-// file to using node module: node-thermal-printer
-// havent tested as we dont have a network Thermal printer
-// will need tinkering as have no previous experience with async await
-const printerIp = "10.10.10.10";
-const date = Date.now();
-const brand = 'Zizzi';
-const siteId = 169;
-const URL = `www.${brand}.com/${siteId}/1234/${date}`; 
+const printerTest = require('printer');
 
 let printer = new ThermalPrinter({
-  type: PrinterTypes.STAR,                                  
-  interface: `tcp://${ printerIp }`,
-  removeSpecialCharacters: false,                         
-  options:{                                               
-    timeout: 5000                                           
-  }
+  type: PrinterTypes.STAR,
+  interface: 'printer:Star_TSP143__STR_T_001____Thanosb_9s_MacBook_Pro__2_',
+  driver: printerTest
 });
 
-const setupPrintJob = () => {
-  printer.alignCenter();
-  printer.println(`Welcome to ${ brand }`);
-  printer.printQR(URL); 
-  printer.cut();
+printer.printQR('HELLO');
+const buffer = printer.getBuffer();
+
+function sendPrint() {
+  printerTest.printDirect({
+    data: buffer.toString(),
+    type: 'RAW',
+    success: function (jobID) {
+      console.log("ID: " + jobID);
+    },
+    error: function (err) {
+      console.log('printer module error: '+err);
+      throw err;
+    }
+  });
 }
 
-const print = async () => {
-  await printer.isPrinterConnected();
-  await printer.execute()
-}
-
-setupPrintJob();
-print();
-
-
+sendPrint();
 
